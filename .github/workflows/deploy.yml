@@ -36,8 +36,23 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: 22
           script: |
-            cd /home/ubuntu/Contact_Form_App_New/frontend
+            # Go to home folder
+            cd /home/ubuntu || mkdir /home/ubuntu && cd /home/ubuntu
+
+            # Clone repo if it doesn't exist
+            if [ ! -d "Contact_Form_App_New" ]; then
+              git clone https://github.com/<your-username>/<repo-name>.git Contact_Form_App_New
+            fi
+
+            # Go inside frontend
+            cd Contact_Form_App_New/frontend
+
+            # Pull latest changes
             git pull
+
+            # Install dependencies and build
             npm install
             npx react-scripts build
-            pm2 restart app-name
+
+            # Restart or start PM2 app
+            pm2 restart app-name || pm2 start npm --name "app-name" -- run start
