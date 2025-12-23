@@ -9,26 +9,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # Step 3: Build frontend
       - name: Build frontend
         run: |
           cd frontend
           chmod +x node_modules/.bin/react-scripts
-          npm install
+          npm install --no-fund --no-audit
           npx react-scripts build
 
-      # Step 4: Deploy to EC2
-      - name: Copy files to EC2 and restart app
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -36,23 +32,15 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: 22
           script: |
-            # Go to home folder
             cd /home/ubuntu || mkdir /home/ubuntu && cd /home/ubuntu
-
-            # Clone repo if it doesn't exist
             if [ ! -d "Contact_Form_App_New" ]; then
-              git clone https://github.com/<your-username>/<repo-name>.git Contact_Form_App_New
+              git clone https://github.com/RiwaB/Cloud_Project.git Contact_Form_App_New
             fi
-
-            # Go inside frontend
             cd Contact_Form_App_New/frontend
-
-            # Pull latest changes
-            git pull
-
-            # Install dependencies and build
-            npm install
+            git reset --hard
+            git clean -fd
+            git pull origin main
+            npm install --no-fund --no-audit
+            chmod +x node_modules/.bin/react-scripts
             npx react-scripts build
-
-            # Restart or start PM2 app
-            pm2 restart app-name || pm2 start npm --name "app-name" -- run start
+            pm2 restart app-name || pm2 start npm --name "Cloud_Project" -- run start --watch
