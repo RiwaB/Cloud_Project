@@ -9,22 +9,26 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
+      # Step 3: Build frontend
       - name: Build frontend
         run: |
           cd frontend
           chmod +x node_modules/.bin/react-scripts
-          npm ci
+          npm install
           npx react-scripts build
 
-      - name: Copy files to EC2
+      # Step 4: Deploy to EC2
+      - name: Copy files to EC2 and restart app
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -34,6 +38,6 @@ jobs:
           script: |
             cd /home/ubuntu/Contact_Form_App_New/frontend
             git pull
-            npm ci
+            npm install
             npx react-scripts build
             pm2 restart app-name
