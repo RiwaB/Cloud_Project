@@ -41,7 +41,7 @@ const ContactForm = () => {
 
   return (
     <div className="contact-form-wrapper">
-      <h2>Contact Us</h2>
+      <h2>Contact Me</h2>
       <form className="contact-form" onSubmit={handleSubmit}>
         <div className="input-group">
           <AiOutlineUser className="icon" />
