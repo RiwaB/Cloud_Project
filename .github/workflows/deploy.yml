@@ -17,11 +17,12 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Build frontend
         run: |
           cd frontend
-          npm install
-          npm run build
+          chmod +x node_modules/.bin/react-scripts
+          npm ci
+          npx react-scripts build
 
       - name: Copy files to EC2
         uses: appleboy/ssh-action@v0.1.6
@@ -33,6 +34,6 @@ jobs:
           script: |
             cd /home/ubuntu/Contact_Form_App_New/frontend
             git pull
-            npm install
-            npm run build
+            npm ci
+            npx react-scripts build
             pm2 restart app-name
