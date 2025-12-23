@@ -43,4 +43,4 @@ jobs:
             npm install --no-fund --no-audit
             chmod +x node_modules/.bin/react-scripts
             npx react-scripts build
-            pm2 restart app-name || pm2 start npm --name "Cloud_Project" -- run start --watch
+            pm2 restart app-name || pm2 start npm --name "Contact_Form_App_New" -- run start --watch
