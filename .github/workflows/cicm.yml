@@ -22,8 +22,8 @@ jobs:
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v22
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_access_key: ${{ secrets.ELASTIC_BEANSTALK }}
+          aws_secret_key: ${{ secrets.ELASTIC_BEANSTALK_SECRET }}
           application_name: 'Cloud_Project'
           environment_name: 'CloudProject-env'
           version_label: ${{ github.sha }}
