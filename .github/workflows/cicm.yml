@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy Full-Stack to Elastic Beanstalk
 
 on:
   push:
@@ -7,18 +7,45 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: [ubuntu-latest ]
+    runs-on: ubuntu-latest
+
     steps:
+      # 1️⃣ Checkout the repository
       - name: Checkout Source
         uses: actions/checkout@v5
+
+      # 2️⃣ Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: 24
-      - name: Install Dependencies
+
+      # 3️⃣ Install frontend dependencies
+      - name: Install frontend dependencies
         run: npm install
+        working-directory: frontend
+
+      # 4️⃣ Build frontend
+      - name: Build frontend
+        run: npm run build
+        working-directory: frontend
+
+      # 5️⃣ Install backend dependencies
+      - name: Install backend dependencies
+        run: npm install
+        working-directory: backend
+
+      # 6️⃣ Copy frontend build into backend folder
+      - name: Copy frontend build into backend
+        run: cp -r ../frontend/build ./frontend-build
+        working-directory: backend
+
+      # 7️⃣ Generate deployment zip (backend + frontend)
       - name: Generate Deployment Package
-        run: zip -r nodejs-app-build.zip .
+        run: zip -r ../fullstack-app.zip ./*
+        working-directory: backend
+
+      # 8️⃣ Deploy to Elastic Beanstalk
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v22
         with:
@@ -28,5 +55,4 @@ jobs:
           environment_name: 'CloudProject-env'
           version_label: ${{ github.sha }}
           region: us-east-1
-          deployment_package: nodejs-app-build.zip
-      
+          deployment_package: backend/fullstack-app.zip
